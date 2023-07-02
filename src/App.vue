@@ -1,7 +1,3 @@
-<script setup>
-import {Check, Close} from '@element-plus/icons-vue'
-</script>
-
 <template xmlns="http://www.w3.org/1999/html">
   <div class="banner">
     <el-row>
@@ -45,8 +41,8 @@ import {Check, Close} from '@element-plus/icons-vue'
           class="ml-2"
           inline-prompt
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-          :active-icon="Check"
-          :inactive-icon="Close"/>
+          active-text="Yes"
+          inactive-text="No"/>
     </el-col>
     <el-col :span="7">
       <el-button
