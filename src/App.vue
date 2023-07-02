@@ -292,6 +292,7 @@ export default {
     },
 
     resetDynamicData() {
+      this.current_selected = -1;
       this.current_layer = 0;
       while (this.current_heads.length > 0) {
         this.current_heads.shift();
@@ -302,7 +303,6 @@ export default {
       this.all_tokens = 0;
       this.head_cnt = 0;
       this.layer_cnt = 0;
-      this.current_selected = -1;
       this.colorMap.clear();
       this.colorList = ["red", "lime", "blue", "yellow", "aqua", "magenta"];
     },
