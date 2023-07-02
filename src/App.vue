@@ -326,10 +326,8 @@ export default {
     },
 
     reDrawAttn(sentenceIdx) {
-      if (sentenceIdx === -1) {
-        return;
-      }
-      this.current_selected = sentenceIdx;
+      if (sentenceIdx === -1) return;
+      if (typeof this.attnData === 'undefined') return;
       if (this.current_heads.length === 0) {
         this.$alert(
             "Please select at least one head to visualize!",
@@ -343,6 +341,7 @@ export default {
       this.clearAllColor()
 
       this.underlineToken(sentenceIdx)
+      this.current_selected = sentenceIdx;
 
       let attnLis = [];
       for (const head_id of this.current_heads) {
