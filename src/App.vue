@@ -1,3 +1,7 @@
+<script setup>
+import {Check, Close} from '@element-plus/icons-vue'
+</script>
+
 <template xmlns="http://www.w3.org/1999/html">
   <div class="banner">
     <el-row>
@@ -32,7 +36,19 @@
   </el-row>
 
   <el-row class="op-area">
-    <el-col :span="8">
+    <el-col :span="3">
+      <el-text>
+        Scale Attn Score:
+      </el-text>
+      <el-switch
+          v-model="need_scale"
+          class="ml-2"
+          inline-prompt
+          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          :active-icon="Check"
+          :inactive-icon="Close"/>
+    </el-col>
+    <el-col :span="7">
       <el-button
           type="primary"
           style="font-family: 'DMSans', sans-serif"
@@ -41,7 +57,7 @@
         LoadSampleFile
       </el-button>
     </el-col>
-    <el-col :span="8">
+    <el-col :span="7">
       <el-button
           type="primary"
           style="font-family: 'DMSans', sans-serif"
@@ -50,7 +66,7 @@
       </el-button>
     </el-col>
 
-    <el-col :span="8">
+    <el-col :span="7">
       <el-select
           v-model="current_layer" class="m-2" placeholder="Select" size="large">
         <el-option
@@ -163,9 +179,17 @@ export default {
       colorList: ["red", "lime", "blue", "yellow", "aqua", "magenta"],
       colorMap: new Map,
       internalJReader: null,
+      current_selected: -1,
+      need_scale: false,
     }
   },
   watch: {
+    need_scale() {
+      this.reDrawAttn(this.current_selected)
+    },
+    current_layer() {
+      this.reDrawAttn(this.current_selected)
+    },
     current_heads(newVal, oldVal) {
       if (newVal.length < oldVal.length) {
         let removed = oldVal.filter(x => !newVal.includes(x));
@@ -183,6 +207,10 @@ export default {
         const c = this.addHead(added);
         this.setHeadColorByIdx(added, c);
       }
+      if (this.current_heads.length === 0) {
+        this.current_selected = -1;
+      }
+      this.reDrawAttn(this.current_selected)
     },
   },
   computed: {
@@ -274,6 +302,7 @@ export default {
       this.all_tokens = 0;
       this.head_cnt = 0;
       this.layer_cnt = 0;
+      this.current_selected = -1;
       this.colorMap.clear();
       this.colorList = ["red", "lime", "blue", "yellow", "aqua", "magenta"];
     },
@@ -290,7 +319,17 @@ export default {
       }
       return htmlStr;
     },
+
     handleReDrawAttn(event) {
+      let sentenceIdx = event.target.id
+      this.reDrawAttn(sentenceIdx)
+    },
+
+    reDrawAttn(sentenceIdx) {
+      if (sentenceIdx === -1) {
+        return;
+      }
+      this.current_selected = sentenceIdx;
       if (this.current_heads.length === 0) {
         this.$alert(
             "Please select at least one head to visualize!",
@@ -303,7 +342,6 @@ export default {
 
       this.clearAllColor()
 
-      let sentenceIdx = event.target.id
       this.underlineToken(sentenceIdx)
 
       let attnLis = [];
@@ -313,6 +351,7 @@ export default {
       }
 
       let maxScores = [];
+      let globalMax = 0;
       for (let i = 0; i < attnLis[0].attnscore.length; i++) {
         let maxScore = -Infinity;
         let maxHeadId = null;
@@ -320,6 +359,7 @@ export default {
         for (let j = 0; j < attnLis.length; j++) {
           if (attnLis[j].attnscore[i] > maxScore) {
             maxScore = attnLis[j].attnscore[i];
+            if (maxScore > globalMax) globalMax = maxScore;
             maxHeadId = attnLis[j].head_id;
           }
         }
@@ -328,6 +368,7 @@ export default {
 
       for (let [idx, entry] of maxScores.entries()) {
         let [head_id, score] = entry;
+        if (this.need_scale) score /= globalMax;
         this.setColorByIdx(idx, this.applyOpacity(this.colorMap.get(head_id), score))
       }
     },
