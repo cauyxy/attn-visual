@@ -83,9 +83,9 @@
       </label>
     </div>
   </div>
-
-  <el-row>
-    <el-col :span="12">
+  <el-divider/>
+  <el-row justify="center">
+    <el-col :span="8">
       <div class="display-panel">
         <div class="head-title">
           Prompt
@@ -114,7 +114,7 @@
       </div>
 
     </el-col>
-    <el-col :span="12">
+    <el-col :span="8">
       <div class="display-panel">
         <div class="head-title">
           Response
@@ -196,10 +196,10 @@ export default {
       return (originalText) =>
           originalText
               .replace("Ġ", " ")
-              .replace("\n", "↵\n")
+              .replace("\n", "↵")
               .replace("▁", " ")
-              .replace("Ċ", "↵\n")
-              .replace("<0x0A>", "↵\n");
+              .replace("Ċ", "↵")
+              .replace("<0x0A>", "↵");
     }
   },
   mounted() {
@@ -465,9 +465,14 @@ export default {
 }
 
 .display-panel {
-  border-color: #282828;
-  border-width: 2px;
+  border-color: #a1a1a1;
+  border-width: 1px;
+  border-style: solid;
   border-radius: 20px;
+  margin-top: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+  min-height: 300px;
 }
 
 .display-panel .head-title {
